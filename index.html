@@ -1086,6 +1086,34 @@ p{text-wrap:pretty}
   .reveal{opacity:1;transform:none}
   .marquee__track{animation:none}
 }
+
+/* ==========================================================================
+   17. POLISH PASS — RESPONSIVE SAFETY, ACCESSIBILITY & SECTION FLOW
+   ========================================================================== */
+html{scroll-padding-top:calc(var(--nav-h, 72px) + 1.25rem)}
+body{overflow-x:clip}
+img,video,canvas,iframe{max-width:100%}
+section[id],main[id]{scroll-margin-top:calc(var(--nav-h, 72px) + 1rem)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 68%,white);outline-offset:3px}
+@media (max-width:760px){
+  .section{scroll-margin-top:calc(var(--nav-h, 64px) + .5rem)}
+  .section-title{overflow-wrap:anywhere}
+  .pcard__media,.scard__media{-webkit-mask-image:none;mask-image:none}
+}
+@media (max-width:480px){
+  .section{padding-block:3.75rem}
+  .section-head{margin-bottom:2rem}
+  .btn{max-width:100%;white-space:normal}
+}
+@media (hover:none),(pointer:coarse){
+  .spot::after{display:none}
+  .tilt{will-change:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero__inner{opacity:1!important;transform:none!important}
+  .section::before,.section-title::after{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -3206,9 +3234,10 @@ p{text-wrap:pretty}
     /* hero sinks and fades as you leave it */
     if (heroInner) {
       var p = Math.max(0, Math.min(1, y / (vh * 0.8)));
-      heroInner.style.opacity = (1 - p * 0.9).toFixed(3);
+      /* Keep the hero fully readable while scrolling; only use a restrained parallax shift. */
+      heroInner.style.opacity = "1";
       heroInner.style.transform = p > 0.001
-        ? "translate3d(0," + (-p * 40).toFixed(1) + "px,0) scale(" + (1 - p * 0.035).toFixed(4) + ")"
+        ? "translate3d(0," + (-p * 18).toFixed(1) + "px,0) scale(" + (1 - p * 0.012).toFixed(4) + ")"
         : "";
     }
 
