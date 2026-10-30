@@ -704,26 +704,7 @@ p{text-wrap:pretty}
 }
 .hero:hover .hero__spot{opacity:.5}
 
-/* ---- custom cursor ------------------------------------------------------ */
-.cur-dot,.cur-ring{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;opacity:0;transition:opacity .3s var(--ease)}
-.cur-dot{width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--glow)}
-.cur-ring{width:0;height:0}
-.cur-ring__in{
-  position:absolute;left:-21px;top:-21px;width:42px;height:42px;border-radius:50%;
-  border:1.5px solid var(--accent-line);display:grid;place-items:center;
-  transition:transform .3s var(--ease-out),background-color .3s var(--ease),border-color .3s var(--ease);
-}
-.cur-ring__in b{
-  font-family:var(--font-mono);font-size:.55rem;font-weight:600;letter-spacing:.09em;
-  text-transform:uppercase;color:var(--accent);opacity:0;transition:opacity .25s var(--ease);white-space:nowrap;
-}
-.cur-on .cur-dot,.cur-on .cur-ring{opacity:1}
-.cur-hover .cur-ring__in{transform:scale(1.5);background:var(--accent-soft);border-color:transparent}
-.cur-label .cur-ring__in{transform:scale(2);background:var(--accent-soft);border-color:transparent}
-.cur-label .cur-ring__in b{opacity:1}
-.cur-down .cur-ring__in{transform:scale(.72) !important}
-.cursor-hidden,.cursor-hidden *{cursor:none !important}
-@media (hover:none),(pointer:coarse){.cur-dot,.cur-ring{display:none}}
+/* Use the browser's native cursor for a familiar, accessible feel. */
 
 /* ---- word-by-word split reveal ------------------------------------------ */
 .split .grad{
@@ -1121,8 +1102,6 @@ section[id],main[id]{scroll-margin-top:calc(var(--nav-h, 72px) + 1rem)}
 <a class="skip" href="#main">Skip to content</a>
 
 <div class="grain" aria-hidden="true"></div>
-<div class="cur-dot" aria-hidden="true"></div>
-<div class="cur-ring" aria-hidden="true"><span class="cur-ring__in"><b></b></span></div>
 
 <!-- scroll progress -->
 <div class="progress" aria-hidden="true"><div class="progress__bar" id="progressBar"></div></div>
@@ -2830,39 +2809,13 @@ section[id],main[id]{scroll-margin-top:calc(var(--nav-h, 72px) + 1rem)}
 
   /* ===========================================================================
    *  BLOCK 7 — MOTION LAYER
-   *  Custom cursor · split text · counters · tilt · spotlight · magnetism ·
+   *  Native cursor · split text · counters · tilt · spotlight · magnetism ·
    *  parallax · scroll-velocity skew · timeline draw · directional nav.
    *  All of it is skipped (or neutralised) under prefers-reduced-motion and
    *  on touch / coarse-pointer devices.
    * ======================================================================== */
   var fine = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
   var CRAZY = !reduce && fine;
-
-  /* ---- 7.1 custom cursor ------------------------------------------------ */
-  var htmlEl = document.documentElement;
-  var dot = $(".cur-dot"), ring = $(".cur-ring"), ringLabel = $(".cur-ring__in b");
-
-  if (CRAZY) {
-    htmlEl.classList.add("cursor-hidden");
-    var px = window.innerWidth / 2, py = window.innerHeight / 2;
-    var rx = px, ry = py;
-
-    document.addEventListener("pointermove", function (e) {
-      px = e.clientX; py = e.clientY;
-      htmlEl.classList.add("cur-on");
-
-      var t = e.target && e.target.closest ? e.target.closest("[data-cursor],a,button") : null;
-      var label = t && t.getAttribute ? t.getAttribute("data-cursor") : "";
-      htmlEl.classList.toggle("cur-label", !!label);
-      htmlEl.classList.toggle("cur-hover", !label && !!t);
-      if (label && ringLabel.textContent !== label) ringLabel.textContent = label;
-    }, { passive: true });
-
-    document.addEventListener("pointerdown", function () { htmlEl.classList.add("cur-down"); }, { passive: true });
-    document.addEventListener("pointerup", function () { htmlEl.classList.remove("cur-down"); }, { passive: true });
-    document.addEventListener("pointerleave", function () { htmlEl.classList.remove("cur-on"); });
-    window.addEventListener("blur", function () { htmlEl.classList.remove("cur-on"); });
-  }
 
   /* ---- 7.2 word-by-word split reveal ----------------------------------- */
   function splitWords(el) {
@@ -3049,12 +3002,6 @@ section[id],main[id]{scroll-margin-top:calc(var(--nav-h, 72px) + 1rem)}
   /* single rAF loop: cursor trailing + skew easing */
   if (CRAZY || !reduce) {
     (function loop() {
-      if (CRAZY) {
-        rx += (px - rx) * 0.19;
-        ry += (py - ry) * 0.19;
-        if (dot) dot.style.transform = "translate3d(" + px + "px," + py + "px,0)";
-        if (ring) ring.style.transform = "translate3d(" + rx + "px," + ry + "px,0)";
-      }
       if (!reduce) {
         skewTarget *= 0.86;
         skewCur += (skewTarget - skewCur) * 0.16;
